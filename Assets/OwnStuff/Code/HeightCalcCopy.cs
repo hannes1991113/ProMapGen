@@ -40,8 +40,7 @@ public class HeightCalcCopy : MonoBehaviour {
 	}
 		
 	public void CalcHeights() {
-		if (terrainData == null || heights == null || NoiseObject == null)
-			initiate ();
+		initiate ();
 		NoiseObject.change (persistence, lacunarity, octaves);
 		double y = 0.0F;
 		while (y < terrainData.heightmapHeight) {
@@ -62,6 +61,7 @@ public class HeightCalcCopy : MonoBehaviour {
 
 	void CreateSplatmap()
 	{
+		terrainData.alphamapResolution = terrainData.heightmapResolution;
 		splatmap = new float[terrainData.alphamapHeight, terrainData.alphamapWidth, terrainCuts.Length];
 		for(int y = 0; y < terrainData.alphamapHeight; y++){
 			for(int x = 0; x < terrainData.alphamapWidth; x++){
@@ -74,9 +74,5 @@ public class HeightCalcCopy : MonoBehaviour {
 			}
 		}
 		terrainData.SetAlphamaps (0, 0, splatmap);
-	}
-
-	void Update() {
-		
 	}
 }
