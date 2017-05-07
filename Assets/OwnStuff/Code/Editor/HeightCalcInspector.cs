@@ -3,12 +3,12 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEditor;
 
-[CustomEditor(typeof(HeightCalcCopy))]
+[CustomEditor(typeof(HeightCalc))]
 public class HeightCalcInspector : Editor {
 	public override void OnInspectorGUI(){
 		DrawDefaultInspector ();
 
-		HeightCalcCopy heightCalcScript = (HeightCalcCopy)target;
+		HeightCalc heightCalcScript = (HeightCalc)target;
 		if (GUILayout.Button ("Calculate Heights")) {
 			heightCalcScript.CalcHeights ();
 		}
