@@ -55,6 +55,7 @@ public class HeightCalc : MonoBehaviour {
 		
 	public void CalcHeights() {
 		initiate ();
+
 		double y = 0.0F;
 		while (y < terrainData.heightmapHeight) {
 			double x = 0.0F;
@@ -68,6 +69,7 @@ public class HeightCalc : MonoBehaviour {
 			}
 			y++;
 		}
+
 		Debug.Log("x0,y0 =" + heights[0,0]);
 		terrainData.SetHeights (0, 0, heights);
 		CreateSplatmap ();

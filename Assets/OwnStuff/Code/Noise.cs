@@ -26,24 +26,25 @@ public class Noise {
 		double amplitude = 1;
 		double maxValue = 0;			// Used for normalizing result to 0.0 - 1.0
 		for(int i=0;i<octaves;i++) {
-			
+			double value;
 			switch (noiseType) {
-			case NoiseType.Perlin:
-				total += PerlinNoise.perlin (x * frequency, y * frequency, z * frequency, repeat) * amplitude;
-				break;
 			case NoiseType.PerlinUnity:
-				total += Mathf.PerlinNoise ((float)(x * frequency), (float)(y * frequency));
+				float x1 = (float)(x * frequency);
+				float y1 = (float)(y * frequency);
+				value = Mathf.PerlinNoise (x1, y1);
 				break;
 			default:
+				double x2 = x * frequency;
+				double y2 = y * frequency;
+				value = PerlinNoise.perlin (x2, y2, z * frequency, repeat);
 				break;
 			}
-
+			total += value * amplitude;
 			maxValue += amplitude;
 			amplitude *= persistence;
 			frequency *= lacunarity;
 		}
-
-		return total/maxValue;
+		double returnValue = total / maxValue;
+		return returnValue;
 	}
 }
-
