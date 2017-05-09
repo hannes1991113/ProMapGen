@@ -9,16 +9,14 @@ public class Noise {
 	private int octaves;
 	private double lacunarity;
 	private double scale;
+	private NoiseType noiseType;
 
-	public Noise(double persistence, double lacunarity, int octaves, double scale, int r = -1){
-		change (persistence, lacunarity, octaves, scale);
-	}
-
-	public void change(double persistence, double lacunarity, int octaves, double scale, int r = -1){
+	public Noise(double persistence, double lacunarity, int octaves, double scale, NoiseType noiseType, int r = -1){
 		this.persistence = persistence;
 		this.octaves = octaves;
 		this.lacunarity = lacunarity;
 		this.scale = scale;
+		this.noiseType = noiseType;
 		repeat = r;
 	}
 
@@ -28,7 +26,17 @@ public class Noise {
 		double amplitude = 1;
 		double maxValue = 0;			// Used for normalizing result to 0.0 - 1.0
 		for(int i=0;i<octaves;i++) {
-			total += PerlinNoise.perlin(x * frequency, y * frequency, z * frequency, repeat) * amplitude;
+			
+			switch (noiseType) {
+			case NoiseType.Perlin:
+				total += PerlinNoise.perlin (x * frequency, y * frequency, z * frequency, repeat) * amplitude;
+				break;
+			case NoiseType.PerlinUnity:
+				total += Mathf.PerlinNoise ((float)(x * frequency), (float)(y * frequency));
+				break;
+			default:
+				break;
+			}
 
 			maxValue += amplitude;
 			amplitude *= persistence;

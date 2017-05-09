@@ -1,16 +1,17 @@
 using UnityEngine;
 using System.Collections;
 
+public enum NoiseType {Perlin, PerlinUnity};
+
 public class HeightCalc : MonoBehaviour {
 
 	public bool useSeed = true;
 	public string seed = "Seed";
 
-	[Range(0.0f, 1000.0f)]
 	public float xOffset;
-	[Range(0.0f, 1000.0f)]
 	public float yOffset;
-	[Range(0.0f, 100.0f)]
+
+	public NoiseType noiseType = NoiseType.Perlin;
 	public float scale = 20;
 
 	[Range(1, 8)]
@@ -33,7 +34,7 @@ public class HeightCalc : MonoBehaviour {
 
 	private float[,,] splatmap;
 
-	private Noise NoiseObject;
+	private Noise noiseHandler;
 
 	void Start() {
 		
@@ -47,9 +48,9 @@ public class HeightCalc : MonoBehaviour {
 			xOffset = Random.Range (0.0f, 1000.0f);
 			yOffset = Random.Range (0.0f, 1000.0f);
 		}
-		xOffset = Mathf.Abs (xOffset);
-		yOffset = Mathf.Abs (yOffset);
-		NoiseObject = new Noise(persistence, lacunarity, octaves, scale);
+//		xOffset = Mathf.Abs (xOffset);
+//		yOffset = Mathf.Abs (yOffset);
+		noiseHandler = new Noise(persistence, lacunarity, octaves, scale, noiseType);
 	}
 		
 	public void CalcHeights() {
@@ -60,13 +61,14 @@ public class HeightCalc : MonoBehaviour {
 			while (x < terrainData.heightmapWidth) {
 				double xCoord = xOffset + x / terrainData.heightmapWidth;
 				double yCoord = yOffset + y / terrainData.heightmapHeight;
-				double sample = NoiseObject.OctaveNoise(xCoord, yCoord, 0);
+				double sample = noiseHandler.OctaveNoise(xCoord, yCoord, 0);
 				sample = Mathf.Pow ((float)sample, exponent);
 				heights[(int)y, (int)x] = (float)sample;
 				x++;
 			}
 			y++;
 		}
+		Debug.Log("x0,y0 =" + heights[0,0]);
 		terrainData.SetHeights (0, 0, heights);
 		CreateSplatmap ();
 	}
@@ -78,7 +80,7 @@ public class HeightCalc : MonoBehaviour {
 		for(int y = 0; y < terrainData.alphamapHeight; y++){
 			for(int x = 0; x < terrainData.alphamapWidth; x++){
 				for (int i = 0; i < terrainCuts.Length; i++) {
-					if (heights[y,x] < terrainCuts [i]) {
+					if (heights[y,x] <= terrainCuts [i]) {
 						splatmap [y, x, i] = 1;
 						break;
 					}
