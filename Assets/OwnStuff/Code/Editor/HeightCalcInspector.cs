@@ -8,9 +8,9 @@ public class HeightCalcInspector : Editor {
 	public override void OnInspectorGUI(){
 		DrawDefaultInspector ();
 
-		HeightCalc heightCalcScript = (HeightCalc)target;
+		HeightCalc targetScript = (HeightCalc)target;
 		if (GUILayout.Button ("Calculate Heights")) {
-			heightCalcScript.CalcHeights ();
+			targetScript.CalcHeights ();
 		}
 	}
 
