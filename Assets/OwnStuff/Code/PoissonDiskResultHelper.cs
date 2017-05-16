@@ -16,7 +16,6 @@ public class PoissonDiskResultHelper : MonoBehaviour {
 	public void showPointsOnly(){
 		Generate ();
 		ClearHeights(0);
-		sampleCount = PoissonDiskGenerator.sampleCount;
 		for(int i = 0; i < sampleCount; ++i){
 			heights[(int)result[i].x, (int)result[i].y] = 1.0f;
 		}
@@ -26,14 +25,15 @@ public class PoissonDiskResultHelper : MonoBehaviour {
 	void initiate(){
 		terrainData = GetComponent<Terrain> ().terrainData;
 		heights = terrainData.GetHeights (0, 0, terrainData.heightmapWidth, terrainData.heightmapHeight);
+		PoissonDiskGenerator.minDist = minDistance;
+		PoissonDiskGenerator.k = k;
+		PoissonDiskGenerator.sampleRange = terrainData.heightmapHeight;
 	}
 
 	public void Generate(){
 		initiate ();
-		PoissonDiskGenerator.minDist = minDistance;
-		PoissonDiskGenerator.k = k;
-		PoissonDiskGenerator.sampleRange = terrainData.heightmapHeight;
 		result = PoissonDiskGenerator.Generate();
+		sampleCount = PoissonDiskGenerator.sampleCount;
 	}
 
 	void ClearHeights(float clearValue){

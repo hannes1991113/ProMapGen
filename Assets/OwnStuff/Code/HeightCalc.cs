@@ -26,16 +26,20 @@ public class HeightCalc : MonoBehaviour {
 	[Range(0,10)]
 	public float exponent = 1;
 
+	public bool useDisks;
+
 	private TerrainData terrainData;
 	private float[,] heights;
 
 	private SplatmapCreator splatmapCreator;
+	private PoissonDiskResultHelper poissonDiskCreator;
 	private Noise noiseHandler;
 
 	void initiate(){
 		terrainData = GetComponent<Terrain> ().terrainData;
 		heights = terrainData.GetHeights (0, 0, terrainData.heightmapWidth, terrainData.heightmapHeight);
 		splatmapCreator = GetComponent<SplatmapCreator> ();
+		poissonDiskCreator = GetComponent<PoissonDiskResultHelper> ();
 		Random.InitState (seed.GetHashCode());
 		if (useSeed) {
 			xOffset = Random.Range (0.0f, 1000.0f);
@@ -63,7 +67,22 @@ public class HeightCalc : MonoBehaviour {
 			y++;
 		}
 
+		if (useDisks) {
+			combineWithDisks ();
+		}
 		terrainData.SetHeights (0, 0, heights);
 		splatmapCreator.CreateSplatmap ();
+	}
+
+	void combineWithDisks(){
+		float[,] heights2 = new float[terrainData.heightmapWidth, terrainData.heightmapHeight];
+		poissonDiskCreator.Generate ();
+		int sampleCount = poissonDiskCreator.sampleCount;
+		for(int i = 0; i < sampleCount; ++i){
+			int x = (int)poissonDiskCreator.result [i].x;
+			int y = (int)poissonDiskCreator.result [i].y;
+			heights2[x, y] = heights[x, y];
+		}
+		heights = heights2;
 	}
 }
