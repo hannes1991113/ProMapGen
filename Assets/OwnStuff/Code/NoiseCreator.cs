@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class Noise {
+public class NoiseCreator {
 
 	private int repeat;
 	private double persistence;
@@ -11,7 +11,7 @@ public class Noise {
 	private double scale;
 	private NoiseType noiseType;
 
-	public Noise(double persistence, double lacunarity, int octaves, double scale, NoiseType noiseType, int r = -1){
+	public NoiseCreator(double persistence, double lacunarity, int octaves, double scale, NoiseType noiseType, int r = -1){
 		this.persistence = persistence;
 		this.octaves = octaves;
 		this.lacunarity = lacunarity;

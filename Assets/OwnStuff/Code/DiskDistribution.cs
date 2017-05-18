@@ -2,16 +2,23 @@ using UnityEngine;
 using System.Collections;
 using System.Collections.Generic;
 
-public class PoissonDiskResultHelper : MonoBehaviour {
+public class DiskDistribution : MonoBehaviour {
 
 	/// fot algorithm details please take a look at PoissonDiskGenerator.cs.
+	[Header("Distribution Settings")]
 	public float minDistance = 5.0f;	// minimum distance between samples.
 	public int k = 30;					// darting time. Higher number get better result but slower.
-	//private float sampleRange = 256.0f;	// the edge length of the squre area for generation.
 	public int sampleCount = 0;			// number of the samples.
-	public List<Vector2> result;		// the result of sample list.
+	private List<Vector2> result;		// the result of sample list.
+
+	[Header("Noise Settings")]
+
+	[Header("Combination with Heightmap")]
+	public int range = 0;
+
 	private TerrainData terrainData;
 	private float[,] heights;
+	private float[,] newHeights;
 
 	public void showPointsOnly(){
 		Generate ();
@@ -41,6 +48,25 @@ public class PoissonDiskResultHelper : MonoBehaviour {
 			for(int y = 0; y < terrainData.heightmapHeight; ++y){
 				heights [x, y] = clearValue;
 			}
+		}
+	}
+
+	public void combineWithDisks(){
+		newHeights = new float[terrainData.heightmapWidth, terrainData.heightmapHeight];
+		Generate ();
+		for(int i = 0; i < sampleCount; ++i){
+			int x = (int)result [i].x;
+			int y = (int)result [i].y;
+			newHeights[x, y] = heights[x, y];
+		}
+		heights = newHeights;
+		terrainData.SetHeights (0, 0, heights);
+	}
+
+	void combineWithDisk(int middleX, int middleY){
+		int x = Mathf.Clamp(middleX - range, 0, terrainData.heightmapWidth);
+		for (; x < middleX + range || x < terrainData.heightmapWidth; x++) {
+
 		}
 	}
 }

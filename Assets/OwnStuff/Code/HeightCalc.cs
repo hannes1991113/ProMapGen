@@ -3,6 +3,9 @@ using System.Collections;
 
 public enum NoiseType {Perlin, PerlinUnity};
 
+[RequireComponent(typeof(Terrain))]
+[RequireComponent(typeof(DiskDistribution))]
+[RequireComponent(typeof(SplatmapCreator))]
 public class HeightCalc : MonoBehaviour {
 
 	public bool useSeed = true;
@@ -32,14 +35,14 @@ public class HeightCalc : MonoBehaviour {
 	private float[,] heights;
 
 	private SplatmapCreator splatmapCreator;
-	private PoissonDiskResultHelper poissonDiskCreator;
-	private Noise noiseHandler;
+	private DiskDistribution diskCreator;
+	private NoiseCreator noiseCreator;
 
 	void initiate(){
 		terrainData = GetComponent<Terrain> ().terrainData;
 		heights = terrainData.GetHeights (0, 0, terrainData.heightmapWidth, terrainData.heightmapHeight);
 		splatmapCreator = GetComponent<SplatmapCreator> ();
-		poissonDiskCreator = GetComponent<PoissonDiskResultHelper> ();
+		diskCreator = GetComponent<DiskDistribution> ();
 		Random.InitState (seed.GetHashCode());
 		if (useSeed) {
 			xOffset = Random.Range (0.0f, 1000.0f);
@@ -47,7 +50,7 @@ public class HeightCalc : MonoBehaviour {
 		}
 //		xOffset = Mathf.Abs (xOffset);
 //		yOffset = Mathf.Abs (yOffset);
-		noiseHandler = new Noise(persistence, lacunarity, octaves, scale, noiseType);
+		noiseCreator = new NoiseCreator(persistence, lacunarity, octaves, scale, noiseType);
 	}
 		
 	public void CalcHeights() {
@@ -59,7 +62,7 @@ public class HeightCalc : MonoBehaviour {
 			while (x < terrainData.heightmapWidth) {
 				double xCoord = xOffset + x / terrainData.heightmapWidth;
 				double yCoord = yOffset + y / terrainData.heightmapHeight;
-				double sample = noiseHandler.OctaveNoise(xCoord, yCoord, 0);
+				double sample = noiseCreator.OctaveNoise(xCoord, yCoord, 0);
 				sample = Mathf.Pow ((float)sample, exponent);
 				heights[(int)y, (int)x] = (float)sample;
 				x++;
@@ -67,22 +70,10 @@ public class HeightCalc : MonoBehaviour {
 			y++;
 		}
 
-		if (useDisks) {
-			combineWithDisks ();
-		}
 		terrainData.SetHeights (0, 0, heights);
-		splatmapCreator.CreateSplatmap ();
-	}
-
-	void combineWithDisks(){
-		float[,] heights2 = new float[terrainData.heightmapWidth, terrainData.heightmapHeight];
-		poissonDiskCreator.Generate ();
-		int sampleCount = poissonDiskCreator.sampleCount;
-		for(int i = 0; i < sampleCount; ++i){
-			int x = (int)poissonDiskCreator.result [i].x;
-			int y = (int)poissonDiskCreator.result [i].y;
-			heights2[x, y] = heights[x, y];
+		if (useDisks) {
+			diskCreator.combineWithDisks ();
 		}
-		heights = heights2;
+		splatmapCreator.CreateSplatmap ();
 	}
 }

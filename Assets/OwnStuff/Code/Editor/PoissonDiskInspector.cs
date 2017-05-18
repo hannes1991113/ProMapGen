@@ -3,12 +3,12 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEditor;
 
-[CustomEditor(typeof(PoissonDiskResultHelper))]
+[CustomEditor(typeof(DiskDistribution))]
 public class PoissonDiskInspector : Editor {
 	public override void OnInspectorGUI(){
 		DrawDefaultInspector ();
 
-		PoissonDiskResultHelper targetScript = (PoissonDiskResultHelper)target;
+		DiskDistribution targetScript = (DiskDistribution)target;
 		if (GUILayout.Button ("Show Points")) {
 			targetScript.showPointsOnly();
 		}
