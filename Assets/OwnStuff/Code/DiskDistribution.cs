@@ -7,8 +7,8 @@ using System.Collections.Generic;
 public class DiskDistribution : MonoBehaviour {
 	public enum CombinationType {
 		NormalValue,
-		Add,
 		Multiply,
+		Exponent,
 	};
 
 	/// fot algorithm details please take a look at PoissonDiskGenerator.cs.
@@ -24,15 +24,13 @@ public class DiskDistribution : MonoBehaviour {
 	public int maxDistance = 10;
 	public CombinationType combinationType = CombinationType.NormalValue;
 
-	public float a = 0.1f;
-	public float b = 0.7f;
-	public float c = 0.5f;
+	public float exp = 1;
+	public float mult = 1;
+	public float add = 0;
 
 	private TerrainData terrainData;
 	private float[,] heights;
 	private float[,] newHeights;
-
-
 
 	public void showPointsOnly(){
 		Generate ();
@@ -49,6 +47,7 @@ public class DiskDistribution : MonoBehaviour {
 		PoissonDiskGenerator.minDist = minDistance;
 		PoissonDiskGenerator.k = k;
 		PoissonDiskGenerator.sampleRange = terrainData.heightmapHeight;
+		Random.InitState (GetComponent<HeightCalc> ().seed.GetHashCode());
 	}
 
 	void Generate(){
@@ -67,7 +66,8 @@ public class DiskDistribution : MonoBehaviour {
 
 	public void combineWithDisks(){
 		Generate ();
-		newHeights = new float[terrainData.heightmapWidth, terrainData.heightmapHeight];
+		influenceAll ();
+
 		for(int i = 0; i < sampleCount; ++i){
 			int x = (int)result [i].x;
 			int y = (int)result [i].y;
@@ -92,10 +92,8 @@ public class DiskDistribution : MonoBehaviour {
 	}
 
 	float calculateDistance(float px, float py, float qx, float qy){
-		//float distance = Mathf.Sqrt((px - qx) * (px - qx) + (py - qy) * (py - qy));
 		float distance = Vector2.Distance(new Vector2(px,py), new Vector2(qx, qy));
 		distance = distance / maxDistance;
-		//distance = Mathf.Clamp (distance, 0, 1);
 		return distance;
 	}
 
@@ -107,14 +105,21 @@ public class DiskDistribution : MonoBehaviour {
 		default:
 			newHeights [x, y] = heights [x, y];
 			break;
-		case CombinationType.Add:
-			newHeights [x, y] = heights [x, y] + a - b * Mathf.Pow (distance, c);
-			break;
 		case CombinationType.Multiply:
-			newHeights [x, y] = (heights [x, y] + a) * (1 - b * Mathf.Pow (distance, c));
+			newHeights [x, y] = heights [x, y] * (1 - (Mathf.Pow ((distance), exp) * mult));
+			break;
+		case CombinationType.Exponent:
+			newHeights [x, y] = Mathf.Pow (heights [x, y], Mathf.Pow (distance, exp)*mult + add);
 			break;
 		}
+	}
 
-
+	void influenceAll(){
+		newHeights = new float[terrainData.heightmapWidth, terrainData.heightmapHeight];
+		for (int x = 0; x < terrainData.heightmapWidth; x++) {
+			for (int y=0; y < terrainData.heightmapHeight; y++) {
+				combineDistanceAndNoise (1, x, y);
+			}
+		}
 	}
 }

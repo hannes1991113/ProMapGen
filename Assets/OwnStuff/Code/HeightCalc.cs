@@ -43,6 +43,7 @@ public class HeightCalc : MonoBehaviour {
 		heights = terrainData.GetHeights (0, 0, terrainData.heightmapWidth, terrainData.heightmapHeight);
 		splatmapCreator = GetComponent<SplatmapCreator> ();
 		diskCreator = GetComponent<DiskDistribution> ();
+
 		Random.InitState (seed.GetHashCode());
 		if (useSeed) {
 			xOffset = Random.Range (0.0f, 1000.0f);
