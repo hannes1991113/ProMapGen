@@ -9,6 +9,7 @@ public class DiskDistribution : MonoBehaviour {
 		NormalValue,
 		Multiply,
 		Exponent,
+		Add,
 	};
 
 	/// fot algorithm details please take a look at PoissonDiskGenerator.cs.
@@ -28,22 +29,26 @@ public class DiskDistribution : MonoBehaviour {
 	public float mult = 1;
 	public float add = 0;
 
+	[Range(0,1)]
+	public float weight;
+	public AnimationCurve hillCurve;
+
 	private TerrainData terrainData;
 	private float[,] heights;
 	private float[,] newHeights;
 
 	public void showPointsOnly(){
 		Generate ();
-		ClearHeights(0);
 		for(int i = 0; i < sampleCount; ++i){
-			heights[(int)result[i].x, (int)result[i].y] = 1.0f;
+			newHeights[(int)result[i].x, (int)result[i].y] = 1.0f;
 		}
-		terrainData.SetHeights (0, 0, heights);
+		terrainData.SetHeights (0, 0, newHeights);
 	}
 
 	void initiate(){
 		terrainData = GetComponent<Terrain> ().terrainData;
 		heights = terrainData.GetHeights (0, 0, terrainData.heightmapWidth, terrainData.heightmapHeight);
+		newHeights = new float[terrainData.heightmapWidth, terrainData.heightmapHeight];
 		PoissonDiskGenerator.minDist = minDistance;
 		PoissonDiskGenerator.k = k;
 		PoissonDiskGenerator.sampleRange = terrainData.heightmapHeight;
@@ -56,26 +61,15 @@ public class DiskDistribution : MonoBehaviour {
 		sampleCount = PoissonDiskGenerator.sampleCount;
 	}
 
-	void ClearHeights(float clearValue){
-		for(int x = 0; x < terrainData.heightmapWidth; ++x){
-			for(int y = 0; y < terrainData.heightmapHeight; ++y){
-				heights [x, y] = clearValue;
-			}
-		}
-	}
-
 	public void combineWithDisks(){
 		Generate ();
 		influenceAll ();
-
 		for(int i = 0; i < sampleCount; ++i){
 			int x = (int)result [i].x;
 			int y = (int)result [i].y;
 			combineWithDisk (x, y);
-			//newHeights[x, y] = heights[x, y];
 		}
-		heights = newHeights;
-		terrainData.SetHeights (0, 0, heights);
+		terrainData.SetHeights (0, 0, newHeights);
 	}
 
 	void combineWithDisk(int middleX, int middleY){
@@ -111,11 +105,14 @@ public class DiskDistribution : MonoBehaviour {
 		case CombinationType.Exponent:
 			newHeights [x, y] = Mathf.Pow (heights [x, y], Mathf.Pow (distance, exp)*mult + add);
 			break;
+		case CombinationType.Add:
+			newHeights [x, y] = hillCurve.Evaluate (distance) * weight + heights [x, y] * (1 - weight);
+			break;
 		}
 	}
 
 	void influenceAll(){
-		newHeights = new float[terrainData.heightmapWidth, terrainData.heightmapHeight];
+		
 		for (int x = 0; x < terrainData.heightmapWidth; x++) {
 			for (int y=0; y < terrainData.heightmapHeight; y++) {
 				combineDistanceAndNoise (1, x, y);
