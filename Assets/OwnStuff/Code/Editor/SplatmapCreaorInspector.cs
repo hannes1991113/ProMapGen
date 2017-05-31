@@ -12,6 +12,10 @@ public class SplatmapCreaorInspector : Editor {
 		if (GUILayout.Button ("Create Splatmap")) {
 			targetScript.CreateSplatmap ();
 		}
+
+		if (GUILayout.Button ("Set Waterlevel")) {
+			targetScript.setWaterLevel ();
+		}
 	}
 
 }

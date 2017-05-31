@@ -5,11 +5,14 @@ using UnityEngine;
 public class SplatmapCreator : MonoBehaviour {
 	[Range(0,1)]
 	public float[] terrainCuts = {0.1f, 0.2f};
+	[Range(0,1)]
+	public float waterLevel = 0.1f;
 
 	private TerrainData terrainData;
 	private float[,] heights;
 
 	private float[,,] splatmap;
+	private Transform water;
 
 	void initiate(){
 		terrainData = GetComponent<Terrain> ().terrainData;
@@ -33,5 +36,16 @@ public class SplatmapCreator : MonoBehaviour {
 			}
 		}
 		terrainData.SetAlphamaps (0, 0, splatmap);
+		setWaterLevel ();
 	}
+
+	public void setWaterLevel(){
+		water = transform.GetChild (0);
+		float scaleX = terrainData.heightmapScale.x;
+		float scaleY = terrainData.heightmapScale.y;
+		float scaleZ = terrainData.heightmapScale.z;
+		Debug.Log("ScaleX = " + scaleX + " ScaleY = " + scaleY + " ScaleZ = " + scaleZ);
+		water.localPosition = new Vector3 (scaleX * 0.5f, waterLevel * scaleY, scaleZ * 0.5f);
+	}
+
 }
