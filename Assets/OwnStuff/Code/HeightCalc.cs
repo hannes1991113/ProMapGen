@@ -30,6 +30,7 @@ public class HeightCalc : MonoBehaviour {
 	public float exponent = 1;
 
 	public bool useDisks;
+	public bool updateTextures;
 
 	private TerrainData terrainData;
 	private float[,] heights;
@@ -75,6 +76,8 @@ public class HeightCalc : MonoBehaviour {
 		if (useDisks) {
 			diskCreator.combineWithDisks ();
 		}
-		splatmapCreator.CreateSplatmap ();
+		if (updateTextures) {
+			splatmapCreator.CreateSplatmap ();
+		}
 	}
 }

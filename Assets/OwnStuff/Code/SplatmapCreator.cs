@@ -6,7 +6,7 @@ public class SplatmapCreator : MonoBehaviour {
 	[Range(0,1)]
 	public float[] terrainCuts = {0.1f, 0.2f};
 	[Range(0,1)]
-	public float waterLevel = 0.1f;
+	float waterLevel = 0.1f;
 
 	private TerrainData terrainData;
 	private float[,] heights;
@@ -36,7 +36,6 @@ public class SplatmapCreator : MonoBehaviour {
 			}
 		}
 		terrainData.SetAlphamaps (0, 0, splatmap);
-		setWaterLevel ();
 	}
 
 	public void setWaterLevel(){
@@ -45,7 +44,7 @@ public class SplatmapCreator : MonoBehaviour {
 		float scaleY = terrainData.heightmapScale.y;
 		float scaleZ = terrainData.heightmapScale.z;
 		Debug.Log("ScaleX = " + scaleX + " ScaleY = " + scaleY + " ScaleZ = " + scaleZ);
-		water.localPosition = new Vector3 (scaleX * 0.5f, waterLevel * scaleY, scaleZ * 0.5f);
+		water.localPosition = new Vector3 (water.localPosition.x , waterLevel * scaleY, water.localPosition.z);
 	}
 
 }
