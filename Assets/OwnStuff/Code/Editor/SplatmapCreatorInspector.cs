@@ -4,7 +4,7 @@ using UnityEngine;
 using UnityEditor;
 
 [CustomEditor(typeof(SplatmapCreator))]
-public class SplatmapCreaorInspector : Editor {
+public class SplatmapCreatorInspector : Editor {
 	public override void OnInspectorGUI(){
 		DrawDefaultInspector ();
 
