@@ -5,25 +5,25 @@ using UnityEngine;
 public class Combination : MonoBehaviour {
 	public enum CombinationType {
 		Add,
-		Multiply,
 		Exponent,
 	};
 
+	public enum PreprocessType {
+		None,
+		Exponent,
+	}
+
 	public int maxDistance = 10;
 	public CombinationType combinationType = CombinationType.Add;
-
-	public float exp = 1;
-	public float mult = 1;
-	public float add = 0;
-
 	[Range(0,1)]
 	public float weight;
-	public AnimationCurve hillCurve;
+	public AnimationCurve addCurve;
+	public AnimationCurve expCurve;
+
 
 	private TerrainData terrainData;
 	private float[,] heightMap;
 	private float[,] distanceMap;
-	private float[,] ppDistanceMap;
 	private float[,] newHeightMap;
 
 	private DiskDistribution diskDistribution;
@@ -44,7 +44,6 @@ public class Combination : MonoBehaviour {
 	}
 
 	void createDistanceMap(){
-		ppDistanceMap = new float[terrainData.heightmapWidth, terrainData.heightmapHeight];
 		distanceMap = new float[terrainData.heightmapWidth, terrainData.heightmapHeight];
 		fillDistanceMap ();
 		for(int i = 0; i < disks.Count; ++i){
@@ -64,7 +63,6 @@ public class Combination : MonoBehaviour {
 				float distance = calculateDistance (x, y, middleX, middleY);
 				if (distance < distanceMap [x, y]) {
 					distanceMap [x, y] = distance;
-					ppDistanceMap [x, y] = preprocessDistance (distance);;
 				}
 			}
 		}
@@ -74,32 +72,29 @@ public class Combination : MonoBehaviour {
 		newHeightMap = new float[terrainData.heightmapWidth, terrainData.heightmapHeight];
 		for (int x = 0; x < terrainData.heightmapWidth; x++) {
 			for (int y=0; y < terrainData.heightmapHeight; y++) {
-				newHeightMap[x,y] = combineValues (heightMap[x,y], ppDistanceMap[x,y], distanceMap[x,y]);
+				newHeightMap[x,y] = combineValues (heightMap[x,y], distanceMap[x,y]);
 			}
 		}
 	}
 
-	float combineValues(float height, float distance, float realDistance){
-		float returnValue = 0;
+	float combineValues(float height, float distance){
+		float newHeight = 0;
+		distance = preprocessDistance(distance);
 		switch (combinationType){
-		case CombinationType.Multiply:
-			returnValue = height * distance;
-			break;
-		case CombinationType.Exponent:
-			returnValue = Mathf.Pow (height, distance);
-			break;
 		case CombinationType.Add:
 		default:
-			returnValue = distance * weight + height * (1 - weight);
+			newHeight = distance * weight + height * (1 - weight);
+			break;
+		case CombinationType.Exponent:
+			newHeight = Mathf.Pow (height, distance);
 			break;
 		}
-		return returnValue;
+		return newHeight;
 	}
 
 	void fillDistanceMap(){
 		for (int x = 0; x < terrainData.heightmapWidth; x++) {
 			for (int y=0; y < terrainData.heightmapHeight; y++) {
-				ppDistanceMap [x, y] = preprocessDistance (1.414f);
 				distanceMap [x, y] = 1.414f;
 			}
 		}
@@ -107,9 +102,16 @@ public class Combination : MonoBehaviour {
 
 	float preprocessDistance(float distance)
 	{
-		float ppDistance;
-		ppDistance = hillCurve.Evaluate (distance);
-		return ppDistance;
+		switch(combinationType){
+		case CombinationType.Add:
+		default:
+			distance = addCurve.Evaluate (distance);
+			break;
+		case CombinationType.Exponent:
+			distance = expCurve.Evaluate (distance);
+			break;
+		}
+		return distance;
 	}
 
 	float calculateDistance(float px, float py, float qx, float qy){
