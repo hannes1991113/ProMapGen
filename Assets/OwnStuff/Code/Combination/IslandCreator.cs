@@ -2,24 +2,10 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class Combination : MonoBehaviour {
-	public enum CombinationType {
-		Add,
-		Exponent,
-	};
-
-	public enum PreprocessType {
-		None,
-		Exponent,
-	}
-
+public class IslandCreator : MonoBehaviour {
 	public int maxDistance = 10;
-	public CombinationType combinationType = CombinationType.Add;
-	[Range(0,1)]
-	public float weight;
-	public AnimationCurve addCurve;
-	public AnimationCurve expCurve;
 
+	public Combination[] combiner;
 
 	private TerrainData terrainData;
 	private float[,] heightMap;
@@ -78,18 +64,11 @@ public class Combination : MonoBehaviour {
 	}
 
 	float combineValues(float height, float distance){
-		float newHeight = 0;
-		distance = preprocessDistance(distance);
-		switch (combinationType){
-		case CombinationType.Add:
-		default:
-			newHeight = distance * weight + height * (1 - weight);
-			break;
-		case CombinationType.Exponent:
-			newHeight = Mathf.Pow (height, distance);
-			break;
+		for(int i = 0; i < combiner.Length; i++){
+			height = combiner [i].execute (height, distance);
 		}
-		return newHeight;
+//		height = combiner.execute (height, distance);
+		return height;
 	}
 
 	void fillDistanceMap(){
@@ -98,20 +77,6 @@ public class Combination : MonoBehaviour {
 				distanceMap [x, y] = 1.414f;
 			}
 		}
-	}
-
-	float preprocessDistance(float distance)
-	{
-		switch(combinationType){
-		case CombinationType.Add:
-		default:
-			distance = addCurve.Evaluate (distance);
-			break;
-		case CombinationType.Exponent:
-			distance = expCurve.Evaluate (distance);
-			break;
-		}
-		return distance;
 	}
 
 	float calculateDistance(float px, float py, float qx, float qy){

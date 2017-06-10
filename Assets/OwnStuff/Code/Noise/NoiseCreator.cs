@@ -20,6 +20,31 @@ public class NoiseCreator {
 		repeat = r;
 	}
 
+	// To get a single octave out of the Noisemap
+	// octaves starting with 0
+	// Not in use yet, but maybe later
+	public double getOctave(double x, double y, double z, int octave){
+		double frequency = scale;
+		for(int i=0;i < octave; i++) {
+			frequency *= lacunarity;
+		}
+		double value;
+		switch (noiseType) {
+		case NoiseType.PerlinUnity:
+			float x1 = (float)(x * frequency);
+			float y1 = (float)(y * frequency);
+			value = Mathf.PerlinNoise (x1, y1);
+			break;
+		case NoiseType.Perlin:
+		default:
+			double x2 = x * frequency;
+			double y2 = y * frequency;
+			value = PerlinNoise.perlin (x2, y2, z * frequency, repeat);
+			break;
+		}
+		return value;
+	}
+
 	public double OctaveNoise(double x, double y, double z) {
 		double total = 0;
 		double frequency = scale;
@@ -33,6 +58,7 @@ public class NoiseCreator {
 				float y1 = (float)(y * frequency);
 				value = Mathf.PerlinNoise (x1, y1);
 				break;
+			case NoiseType.Perlin:
 			default:
 				double x2 = x * frequency;
 				double y2 = y * frequency;

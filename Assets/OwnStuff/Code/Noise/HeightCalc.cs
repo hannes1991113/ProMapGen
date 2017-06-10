@@ -4,7 +4,7 @@ using System.Collections;
 public enum NoiseType {Perlin, PerlinUnity};
 
 [RequireComponent(typeof(Terrain))]
-[RequireComponent(typeof(Combination))]
+[RequireComponent(typeof(IslandCreator))]
 [RequireComponent(typeof(SplatmapCreator))]
 public class HeightCalc : MonoBehaviour {
 
@@ -36,14 +36,14 @@ public class HeightCalc : MonoBehaviour {
 	private float[,] heights;
 
 	private SplatmapCreator splatmapCreator;
-	private Combination combinationScript;
+	private IslandCreator combinationScript;
 	private NoiseCreator noiseCreator;
 
 	void initiate(){
 		terrainData = GetComponent<Terrain> ().terrainData;
 		heights = terrainData.GetHeights (0, 0, terrainData.heightmapWidth, terrainData.heightmapHeight);
 		splatmapCreator = GetComponent<SplatmapCreator> ();
-		combinationScript = GetComponent<Combination> ();
+		combinationScript = GetComponent<IslandCreator> ();
 
 		Random.InitState (seed.GetHashCode());
 		if (useSeed) {
