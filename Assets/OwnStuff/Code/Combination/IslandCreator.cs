@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 
 public class IslandCreator : MonoBehaviour {
+	
 	public int maxDistance = 10;
 
 	public Combination[] combiner;
@@ -67,7 +68,6 @@ public class IslandCreator : MonoBehaviour {
 		for(int i = 0; i < combiner.Length; i++){
 			height = combiner [i].execute (height, distance);
 		}
-//		height = combiner.execute (height, distance);
 		return height;
 	}
 

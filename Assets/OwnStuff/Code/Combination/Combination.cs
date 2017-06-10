@@ -38,10 +38,10 @@ public class Combination{
 	{
 		switch (preprocessType){
 		case PreprocessType.Curve:
-			preprocessCurve (distance);
+			distance = preprocessCurve (distance);
 			break;
 		case PreprocessType.Exponent:
-			preprocessExponent (distance);
+			distance = preprocessExponent (distance);
 			break;
 		case PreprocessType.None:
 		default:

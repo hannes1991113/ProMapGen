@@ -5,41 +5,41 @@ using UnityEditor;
 
 [CustomEditor(typeof(IslandCreator))]
 public class IslandCreatorInspector : Editor {
-	public override void OnInspectorGUI(){
-//		DrawDefaultInspector ();
 
+	public override void OnInspectorGUI(){
+		DrawDefaultInspector ();
 
 		IslandCreator targetScript = (IslandCreator)target;
 
-		targetScript.maxDistance = EditorGUILayout.IntField ("Max Distance", targetScript.maxDistance);
-
-		targetScript.combiner.Length = EditorGUILayout.IntField ("Length", targetScript.combiner.Length);
-
 		for (int i = 0; i < targetScript.combiner.Length; i++) {
-			Combination combiScript = targetScript.combiner [i];
+			showCombiScript (targetScript.combiner[i]);
+		}
+	}
 
-			combiScript.preprocessType = (Combination.PreprocessType)EditorGUILayout.EnumPopup ("Preprocess", combiScript.preprocessType);
+	void showCombiScript(Combination combiScript){
+		combiScript.preprocessType = (Combination.PreprocessType)EditorGUILayout.EnumPopup ("Preprocess", combiScript.preprocessType);
 
-			switch (combiScript.preprocessType) {
-			case Combination.PreprocessType.Curve:
-				showCurve (combiScript);
-				break;
-			case Combination.PreprocessType.Exponent:
-				showExponentBase (combiScript);
-				break;
-			case Combination.PreprocessType.None:
-			default:
-				break;
-			}
+		switch (combiScript.preprocessType) {
+		case Combination.PreprocessType.Curve:
+			showCurve (combiScript);
+			break;
+		case Combination.PreprocessType.Exponent:
+			showExponentBase (combiScript);
+			break;
+		case Combination.PreprocessType.None:
+		default:
+			break;
+		}
 
-			switch (combiScript.combinationType) {
-			case Combination.CombinationType.Add:
-				combiScript.weight = EditorGUILayout.Slider("Weight", combiScript.weight, 0,1);
-				break;
-			case Combination.CombinationType.Exponent:
-			default:
-				break;
-			}
+		combiScript.combinationType = (Combination.CombinationType)EditorGUILayout.EnumPopup ("Combination", combiScript.combinationType);
+
+		switch (combiScript.combinationType) {
+		case Combination.CombinationType.Add:
+			combiScript.weight = EditorGUILayout.Slider("Weight", combiScript.weight, 0,1);
+			break;
+		case Combination.CombinationType.Exponent:
+		default:
+			break;
 		}
 	}
 
