@@ -6,7 +6,7 @@ public class IslandCreator : MonoBehaviour {
 	
 	public int maxDistance = 10;
 
-	public Combination[] combiner;
+	public Combination[] combiner = {new Combination()};
 
 	private TerrainData terrainData;
 	private float[,] heightMap;

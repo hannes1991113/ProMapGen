@@ -35,7 +35,7 @@ public class IslandCreatorInspector : Editor {
 
 		switch (combiScript.combinationType) {
 		case Combination.CombinationType.Add:
-			combiScript.weight = EditorGUILayout.Slider("Weight", combiScript.weight, 0,1);
+			combiScript.weightCurve = EditorGUILayout.CurveField ("Weight", combiScript.weightCurve);
 			break;
 		case Combination.CombinationType.Exponent:
 		default:

@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-[System.Serializable]
 public class Combination{
 	public enum CombinationType {
 		Add,
@@ -16,22 +15,22 @@ public class Combination{
 	}
 
 	[HideInInspector]
-	public PreprocessType preprocessType;
+	public PreprocessType preprocessType = PreprocessType.None;
 	[HideInInspector]
-	public AnimationCurve addCurve;
+	public AnimationCurve addCurve = new AnimationCurve();
 	[HideInInspector]
-	public AnimationCurve expCurve;
+	public AnimationCurve expCurve = new AnimationCurve();
 	[HideInInspector]
-	public float exponentBase;
+	public float exponentBase = 2.0f;
 	[HideInInspector]
-	public float addBase;
+	public float addBase = 2.0f;
 	[HideInInspector]
-	public CombinationType combinationType;
+	public CombinationType combinationType = CombinationType.Add;
 	[HideInInspector]
-	public float weight;
+	public AnimationCurve weightCurve = new AnimationCurve(new Keyframe(0,1)) ;
 
 	public float execute(float height, float distance){
-		return combine(height, preprocess(distance));
+		return combine(height, preprocess(distance), preprocessWeight(distance));
 	}
 
 	float preprocess(float distance)
@@ -50,7 +49,7 @@ public class Combination{
 		return distance;
 	}
 
-	float combine(float height, float distance){
+	float combine(float height, float distance, float weight){
 		switch (combinationType){
 		case CombinationType.Add:
 		default:
@@ -86,6 +85,11 @@ public class Combination{
 			distance = Mathf.Pow (exponentBase, distance + 1);
 			break;
 		}
+		return distance;
+	}
+
+	float preprocessWeight(float distance){
+		distance = weightCurve.Evaluate(distance);
 		return distance;
 	}
 }
