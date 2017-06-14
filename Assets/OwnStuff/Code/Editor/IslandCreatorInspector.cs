@@ -11,6 +11,8 @@ public class IslandCreatorInspector : Editor {
 
 		IslandCreator targetScript = (IslandCreator)target;
 
+		EditorGUILayout.MinMaxSlider(ref targetScript.minSize, ref targetScript.maxSize, 1, 100);
+
 		for (int i = 0; i < targetScript.combiner.Length; i++) {
 			showCombiScript (targetScript.combiner[i]);
 		}

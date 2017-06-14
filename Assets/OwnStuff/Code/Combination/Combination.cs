@@ -27,7 +27,7 @@ public class Combination{
 	[HideInInspector]
 	public CombinationType combinationType = CombinationType.Add;
 	[HideInInspector]
-	public AnimationCurve weightCurve = new AnimationCurve(new Keyframe(0,1)) ;
+	public AnimationCurve weightCurve = new AnimationCurve(new Keyframe(0.5f, 0.5f)) ;
 
 	public float execute(float height, float distance){
 		return combine(height, preprocess(distance), preprocessWeight(distance));

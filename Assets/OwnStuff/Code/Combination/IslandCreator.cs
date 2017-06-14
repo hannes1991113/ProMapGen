@@ -3,8 +3,10 @@ using System.Collections.Generic;
 using UnityEngine;
 
 public class IslandCreator : MonoBehaviour {
-	
-	public int maxDistance = 10;
+
+	public float maxSize = 10;
+
+	public float minSize = 5;
 
 	public Combination[] combiner = {new Combination()};
 
@@ -41,13 +43,23 @@ public class IslandCreator : MonoBehaviour {
 	}
 
 	void calcDiskArea(int middleX, int middleY){
-		int x = Mathf.Clamp(middleX - maxDistance, 0, terrainData.heightmapWidth);
-		int xBorder = Mathf.Clamp ((middleX + maxDistance), 0, terrainData.heightmapWidth);
+		float maxDistance = Random.Range (minSize, maxSize);
+
+		int x = Mathf.FloorToInt (middleX - maxDistance);
+		x = Mathf.Clamp(x, 0, terrainData.heightmapWidth);
+
+		int xBorder = Mathf.CeilToInt (middleX + maxDistance);
+		xBorder = Mathf.Clamp (xBorder, 0, terrainData.heightmapWidth);
+
 		for (; x < xBorder; x++) {
-			int y = Mathf.Clamp(middleY - maxDistance, 0, terrainData.heightmapWidth);
-			int yBorder = Mathf.Clamp ((middleY + maxDistance), 0, terrainData.heightmapWidth);
+			int y = Mathf.FloorToInt (middleY - maxDistance);
+			y = Mathf.Clamp(y, 0, terrainData.heightmapWidth);
+
+			int yBorder = Mathf.CeilToInt (middleY + maxDistance);
+			yBorder = Mathf.Clamp (yBorder, 0, terrainData.heightmapWidth);
+
 			for (; y < yBorder; y++) {
-				float distance = calculateDistance (x, y, middleX, middleY);
+				float distance = calculateDistance (x, y, middleX, middleY, maxDistance);
 				if (distance < distanceMap [x, y]) {
 					distanceMap [x, y] = distance;
 				}
@@ -74,12 +86,12 @@ public class IslandCreator : MonoBehaviour {
 	void fillDistanceMap(){
 		for (int x = 0; x < terrainData.heightmapWidth; x++) {
 			for (int y=0; y < terrainData.heightmapHeight; y++) {
-				distanceMap [x, y] = 1.414f;
+				distanceMap [x, y] = 1;
 			}
 		}
 	}
 
-	float calculateDistance(float px, float py, float qx, float qy){
+	float calculateDistance(float px, float py, float qx, float qy, float maxDistance){
 		float distance = Vector2.Distance(new Vector2(px,py), new Vector2(qx, qy));
 		distance = distance / maxDistance;
 		return distance;
