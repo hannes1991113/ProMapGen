@@ -8,64 +8,50 @@ public enum NoiseType {Perlin, PerlinUnity};
 [RequireComponent(typeof(SplatmapCreator))]
 public class HeightCalc : MonoBehaviour {
 
-	public bool useSeed = true;
+	public bool randomSeed = false;
 	public string seed = "Seed";
+	public bool resetRandom = true;
+	public bool createTextures = true;
 
-	public float xOffset;
-	public float yOffset;
+	public bool generateIslands = true;
+	public bool updateSplatmap;
 
-	public NoiseType noiseType = NoiseType.Perlin;
-	public float scale = 20;
+	public NoiseCreator heightNoise = new NoiseCreator ();
 
-	[Range(1, 8)]
-	public int octaves = 1;
-
-	[Range(1f, 4f)]
-	public float lacunarity = 2f;
-
-	[Range(0f, 1f)]
-	public float persistence = 0.5f;
-
-	[Range(0,10)]
-	public float exponent = 1;
-
-	public bool useDisks;
-	public bool updateTextures;
+	private float[,] heights;
+	private Random.State RandomStartState;
 
 	private TerrainData terrainData;
-	private float[,] heights;
-
 	private SplatmapCreator splatmapCreator;
-	private IslandCreator combinationScript;
-	private NoiseCreator noiseCreator;
+	private IslandCreator islandCreator;
 
 	void initiate(){
 		terrainData = GetComponent<Terrain> ().terrainData;
 		heights = terrainData.GetHeights (0, 0, terrainData.heightmapWidth, terrainData.heightmapHeight);
 		splatmapCreator = GetComponent<SplatmapCreator> ();
-		combinationScript = GetComponent<IslandCreator> ();
+		islandCreator = GetComponent<IslandCreator> ();
 
-		Random.InitState (seed.GetHashCode());
-		if (useSeed) {
-			xOffset = Random.Range (0.0f, 1000.0f);
-			yOffset = Random.Range (0.0f, 1000.0f);
+		int randomInit;
+		if (randomSeed) {
+			randomInit = System.DateTime.Now.GetHashCode();
+			seed = System.DateTime.Now.ToString ();
+		} else {
+			randomInit = seed.GetHashCode ();
 		}
-//		xOffset = Mathf.Abs (xOffset);
-//		yOffset = Mathf.Abs (yOffset);
-		noiseCreator = new NoiseCreator(persistence, lacunarity, octaves, scale, noiseType);
+		Random.InitState (randomInit);
+		heightNoise.setRandom ();
 	}
 		
-	public void CalcHeights() {
+	public void CalcAll() {
 		initiate ();
 
 		double y = 0.0F;
 		while (y < terrainData.heightmapHeight) {
 			double x = 0.0F;
 			while (x < terrainData.heightmapWidth) {
-				double xCoord = xOffset + x / terrainData.heightmapWidth;
-				double yCoord = yOffset + y / terrainData.heightmapHeight;
-				double sample = noiseCreator.OctaveNoise(xCoord, yCoord, 0);
-				sample = Mathf.Pow ((float)sample, exponent);
+				double xCoord = x / terrainData.heightmapWidth;
+				double yCoord = y / terrainData.heightmapHeight;
+				double sample = heightNoise.OctaveNoise(xCoord, yCoord, 0);
 				heights[(int)y, (int)x] = (float)sample;
 				x++;
 			}
@@ -73,11 +59,16 @@ public class HeightCalc : MonoBehaviour {
 		}
 
 		terrainData.SetHeights (0, 0, heights);
-		if (useDisks) {
-			combinationScript.combineWithDisks ();
+		if (createTextures) {
+			heightNoise.createTexture (terrainData.heightmapHeight, terrainData.heightmapWidth);
 		}
-		if (updateTextures) {
+		if (generateIslands) {
+			islandCreator.combineWithDisks ();
+		}
+		if (updateSplatmap) {
 			splatmapCreator.CreateSplatmap ();
 		}
 	}
+
+
 }

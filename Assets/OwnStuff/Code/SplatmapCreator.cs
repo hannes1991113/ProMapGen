@@ -3,6 +3,8 @@ using System.Collections.Generic;
 using UnityEngine;
 
 public class SplatmapCreator : MonoBehaviour {
+
+	public NoiseCreator[] noises = { new NoiseCreator () };
 	[Range(0,1)]
 	public float[] terrainCuts = {0.1f, 0.2f};
 	[Range(0,1)]

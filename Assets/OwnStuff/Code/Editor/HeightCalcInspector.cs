@@ -9,8 +9,8 @@ public class HeightCalcInspector : Editor {
 		DrawDefaultInspector ();
 
 		HeightCalc targetScript = (HeightCalc)target;
-		if (GUILayout.Button ("Calculate Heights")) {
-			targetScript.CalcHeights ();
+		if (GUILayout.Button ("Calculate All")) {
+			targetScript.CalcAll ();
 		}
 	}
 
