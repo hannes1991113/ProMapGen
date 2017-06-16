@@ -21,7 +21,7 @@ public class IslandCreator : MonoBehaviour {
 	void initiate(){
 		diskDistribution = GetComponent<DiskDistribution> ();
 		terrainData = GetComponent<Terrain> ().terrainData;
-		heightMap = terrainData.GetHeights (0, 0, terrainData.heightmapWidth, terrainData.heightmapHeight);
+		heightMap = GetComponent<HeightCalc> ().getHeights ();
 	}
 
 	public void combineWithDisks(){

@@ -22,8 +22,9 @@ public class NoiseCreator {
 	[Range(0,10)]
 	public float exponent = 1;
 
-
 	public Texture2D texture;
+
+	private int size;
 
 	// To get a single octave out of the Noisemap
 	// octaves starting with 0
@@ -52,8 +53,8 @@ public class NoiseCreator {
 	}
 
 	public float OctaveNoise(double x, double y, double z) {
-		x += xOffset;
-		y += yOffset;
+		x = (x + xOffset) / size;
+		y = (y + yOffset) / size;
 		double total = 0;
 		double frequency = scale;
 		double amplitude = 1;
@@ -82,13 +83,11 @@ public class NoiseCreator {
 		return (float)Mathf.Pow ((float)returnValue, exponent);
 	}
 
-	public void createTexture(int sizeX, int sizeY){
-		texture = new Texture2D (sizeX, sizeY, TextureFormat.RGB24, false);
-		for(int y = 0; y < sizeY; y++) {
-			for(int x = 0; x < sizeX; x++) {
-				double xCoord = x / (double)sizeX;
-				double yCoord = y / (double)sizeY;
-				double sample = OctaveNoise(xCoord, yCoord, 0);
+	public void createTexture(){
+		texture = new Texture2D (size, size, TextureFormat.RGB24, false);
+		for(int y = 0; y < size; y++) {
+			for(int x = 0; x < size; x++) {
+				double sample = OctaveNoise(x, y, 0);
 				texture.SetPixel((int)x, (int)y, Color.white * (float) sample);
 			}
 		}
@@ -108,7 +107,8 @@ public class NoiseCreator {
 		return field;
 	}
 
-	public void setRandom(){
+	public void create(int size){
+		this.size = size;
 		if (random) {
 			xOffset = Random.Range (0.0f, 1000.0f);
 			yOffset = Random.Range (0.0f, 1000.0f);

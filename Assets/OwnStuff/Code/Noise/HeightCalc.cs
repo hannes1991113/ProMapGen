@@ -9,7 +9,7 @@ public enum NoiseType {Perlin, PerlinUnity};
 public class HeightCalc : MonoBehaviour {
 
 	public bool randomSeed = false;
-	public string seed = "Seed";
+	public int seed = 0;
 	public bool resetRandom = true;
 	public bool createTextures = true;
 
@@ -19,7 +19,8 @@ public class HeightCalc : MonoBehaviour {
 	public NoiseCreator heightNoise = new NoiseCreator ();
 
 	private float[,] heights;
-	private Random.State RandomStartState;
+	[HideInInspector]
+	public Random.State randomStartState;
 
 	private TerrainData terrainData;
 	private SplatmapCreator splatmapCreator;
@@ -31,15 +32,12 @@ public class HeightCalc : MonoBehaviour {
 		splatmapCreator = GetComponent<SplatmapCreator> ();
 		islandCreator = GetComponent<IslandCreator> ();
 
-		int randomInit;
 		if (randomSeed) {
-			randomInit = System.DateTime.Now.GetHashCode();
-			seed = System.DateTime.Now.ToString ();
-		} else {
-			randomInit = seed.GetHashCode ();
+			seed = System.DateTime.Now.GetHashCode();
 		}
-		Random.InitState (randomInit);
-		heightNoise.setRandom ();
+		Random.InitState (seed);
+		randomStartState = Random.state;
+		heightNoise.create (terrainData.heightmapResolution);
 	}
 		
 	public void CalcAll() {
@@ -49,9 +47,7 @@ public class HeightCalc : MonoBehaviour {
 		while (y < terrainData.heightmapHeight) {
 			double x = 0.0F;
 			while (x < terrainData.heightmapWidth) {
-				double xCoord = x / terrainData.heightmapWidth;
-				double yCoord = y / terrainData.heightmapHeight;
-				double sample = heightNoise.OctaveNoise(xCoord, yCoord, 0);
+				double sample = heightNoise.OctaveNoise(x, y, 0);
 				heights[(int)y, (int)x] = (float)sample;
 				x++;
 			}
@@ -60,7 +56,7 @@ public class HeightCalc : MonoBehaviour {
 
 		terrainData.SetHeights (0, 0, heights);
 		if (createTextures) {
-			heightNoise.createTexture (terrainData.heightmapHeight, terrainData.heightmapWidth);
+			heightNoise.createTexture ();
 		}
 		if (generateIslands) {
 			islandCreator.combineWithDisks ();
@@ -70,5 +66,13 @@ public class HeightCalc : MonoBehaviour {
 		}
 	}
 
+	public float[,] getHeights(){
+		if (heights != null) {
+			return heights;
+		} else {
+			return GetComponent<Terrain> ().terrainData.
+				GetHeights (0, 0, terrainData.heightmapWidth, terrainData.heightmapHeight);
+		}
+	}
 
 }

@@ -12,13 +12,11 @@ public class DiskDistribution : MonoBehaviour {
 	};
 
 	/// for algorithm details please take a look at PoissonDiskGenerator.cs.
-	[Header("Distribution Settings")]
 	public float minDistance = 5.0f;	// minimum distance between samples.
 	public int k = 30;					// darting time. Higher number get better result but slower.
 	public int sampleCount = 0;			// number of the samples.
 	private List<Vector2> result;		// the result of sample list.
 
-	[Header("Noise Settings")]
 
 	private TerrainData terrainData;
 
@@ -36,7 +34,10 @@ public class DiskDistribution : MonoBehaviour {
 		PoissonDiskGenerator.minDist = minDistance;
 		PoissonDiskGenerator.k = k;
 		PoissonDiskGenerator.sampleRange = terrainData.heightmapHeight;
-		Random.InitState (GetComponent<HeightCalc> ().seed.GetHashCode());
+		HeightCalc controller = GetComponent<HeightCalc> ();
+		if (controller.resetRandom) {
+			Random.state = controller.randomStartState;
+		}
 	}
 
 	public List<Vector2> generateDisks(){
