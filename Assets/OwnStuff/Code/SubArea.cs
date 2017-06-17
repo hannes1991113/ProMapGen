@@ -4,10 +4,10 @@ using UnityEngine;
 
 [System.Serializable]
 public class SubArea {
-
-	public Texture2D texture;
 	public string name;
 	public string noiseName;
+	public Texture2D texture;
+
 	[Range(0,1)]
 	public float cut = 1;
 

@@ -4,8 +4,8 @@ using UnityEngine;
 
 [System.Serializable]
 public class Area {
-	public Texture2D defaultTexture;
 	public string name;
+	public Texture2D defaultTexture;
 
 	[Range(0,1)]
 	public float cut = 1;
@@ -20,14 +20,19 @@ public class Area {
 		}
 	}
 
-	public int getTextureNumber (int x, int y){
+	public Tile getTile (int x, int y){
+		Tile tile = new Tile ();
+		tile.areaName = name;
+		tile.textureNumber = textureNumber;
 		foreach(SubArea subArea in subAreas){
 			int num = subArea.getTextureNumber (x, y);
 			if (num > -1) {
-				return num;
+				tile.textureNumber = num;
+				tile.subAreaName = subArea.name;
+				break;
 			}
 		}
-		return textureNumber;
+		return tile;
 	}
 
 }

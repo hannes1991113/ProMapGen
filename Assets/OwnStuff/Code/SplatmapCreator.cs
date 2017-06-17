@@ -3,14 +3,11 @@ using System.Collections.Generic;
 using UnityEngine;
 
 public class SplatmapCreator : MonoBehaviour {
-
-	public Texture2D[] textures;
-
 	public NoiseCreator[] noises;
 	public Area[] areas;
 
-	[Range(0,1)]
-	public float[] terrainCuts = {0.1f, 0.2f};
+	public Vector2 position;
+
 	[Range(0,1)]
 	float waterLevel = 0.1f;
 
@@ -21,10 +18,13 @@ public class SplatmapCreator : MonoBehaviour {
 	private Transform water;
 	private int numOfTextures;
 
+	private Tile[,] tileMap;
+
 	void initiate(){
 		terrainData = GetComponent<Terrain> ().terrainData;
 		terrainData.alphamapResolution = terrainData.heightmapResolution;
 		heights = terrainData.GetHeights (0, 0, terrainData.heightmapWidth, terrainData.heightmapHeight);
+		tileMap = new Tile[terrainData.heightmapWidth, terrainData.heightmapHeight];
 		processAndCountTextures ();
 		splatmap = new float[terrainData.alphamapHeight, terrainData.alphamapWidth, numOfTextures];
 		createNoiseCreators ();
@@ -37,7 +37,9 @@ public class SplatmapCreator : MonoBehaviour {
 			for(int x = 0; x < terrainData.alphamapWidth; x++){
 				for (int i = 0; i < areas.Length; i++) {
 					if (heights[y,x] <= areas [i].cut) {
-						splatmap [y, x, areas[i].getTextureNumber(y,x)] = 1;
+						Tile newTile = areas[i].getTile(y,x);
+						tileMap [y, x] = newTile;
+						splatmap [y, x, newTile.textureNumber] = 1;
 						break;
 					}
 				}
@@ -80,6 +82,11 @@ public class SplatmapCreator : MonoBehaviour {
 				noise.createTexture ();
 			}
 		}
+	}
+
+	public void getTileName(){
+		Tile posTile = tileMap [(int)position.x, (int)position.y];
+		Debug.Log (posTile.areaName + " and " + posTile.subAreaName + " at " + position.ToString());
 	}
 
 	//Shit
