@@ -2,6 +2,7 @@ using UnityEngine;
 using System.Collections;
 using System.Collections.Generic;
 
+namespace ProMapGen{
 /// cf paper: Fast Poisson Disk Sampling in Arbitrary Dimensions. Robert Bridson. ACM SIGGRAPH 2007
 /// How to use:
 /// 	1. set parameters. ( minDist / k / sampleRange )
@@ -129,4 +130,5 @@ public sealed class PoissonDiskGenerator : Object {
 	static private int _WrapIndex(int index){
 		return  index < 0 ? (index % gridLength + gridLength) : (index % gridLength);
 	}
+}
 }

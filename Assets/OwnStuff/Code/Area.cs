@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 
+namespace ProMapGen{
 [System.Serializable]
 public class Area {
 	public string name;
@@ -35,4 +36,5 @@ public class Area {
 		return tile;
 	}
 
+}
 }

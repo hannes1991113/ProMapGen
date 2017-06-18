@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 
+namespace ProMapGen{
 public class MapAnalyser : MonoBehaviour {
 
 	public int count;
@@ -60,4 +61,5 @@ public class MapAnalyser : MonoBehaviour {
 			}
 		}
 	}
+}
 }

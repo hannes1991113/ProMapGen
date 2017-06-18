@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 
+namespace ProMapGen{
 [System.Serializable]
 public class SubArea {
 	public string name;
@@ -39,4 +40,5 @@ public class SubArea {
 			Debug.Log ("Area named " + name + "did not find Noise named: " + noiseName);
 		}
 	}
+}
 }

@@ -3,15 +3,17 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEditor;
 
-[CustomEditor(typeof(HeightCalc))]
+namespace ProMapGen{
+[CustomEditor(typeof(Controller))]
 public class HeightCalcInspector : Editor {
 	public override void OnInspectorGUI(){
 		DrawDefaultInspector ();
 
-		HeightCalc targetScript = (HeightCalc)target;
+		Controller targetScript = (Controller)target;
 		if (GUILayout.Button ("Calculate All")) {
 			targetScript.CalcAll ();
 		}
 	}
 
+}
 }

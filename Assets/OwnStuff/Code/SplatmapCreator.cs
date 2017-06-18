@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 
+namespace ProMapGen{
 public class SplatmapCreator : MonoBehaviour {
 	public NoiseCreator[] noises;
 	public Area[] areas;
@@ -75,10 +76,10 @@ public class SplatmapCreator : MonoBehaviour {
 	void createNoiseCreators(){
 		foreach (NoiseCreator noise in noises) {
 			noise.create (terrainData.heightmapResolution);
-			if (GetComponent<HeightCalc> ().resetRandom) {
-				Random.state = GetComponent<HeightCalc> ().randomStartState;
+			if (GetComponent<Controller> ().debugResetRandom) {
+				Random.state = GetComponent<Controller> ().randomStartState;
 			}
-			if (GetComponent<HeightCalc> ().createTextures) {
+			if (GetComponent<Controller> ().debugCreateTextures) {
 				noise.createTexture ();
 			}
 		}
@@ -98,5 +99,6 @@ public class SplatmapCreator : MonoBehaviour {
 		Debug.Log("ScaleX = " + scaleX + " ScaleY = " + scaleY + " ScaleZ = " + scaleZ);
 		water.localPosition = new Vector3 (water.localPosition.x , waterLevel * scaleY, water.localPosition.z);
 	}
-
+	
+}
 }

@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEditor;
 
+namespace ProMapGen{
 [CustomEditor(typeof(MapAnalyser))]
 public class MapAnalyserInspector : Editor {
 	public override void OnInspectorGUI(){
@@ -14,4 +15,5 @@ public class MapAnalyserInspector : Editor {
 		}
 	}
 
+}
 }

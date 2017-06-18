@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEditor;
 
+namespace ProMapGen{
 [CustomEditor(typeof(SplatmapCreator))]
 public class SplatmapCreatorInspector : Editor {
 	public override void OnInspectorGUI(){
@@ -22,4 +23,5 @@ public class SplatmapCreatorInspector : Editor {
 //		}
 	}
 
+}
 }

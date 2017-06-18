@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 
+namespace ProMapGen{
 public class PerlinNoise {
 	private static readonly int[] p = { 151,160,137,91,90,15,					// Hash lookup table as defined by Ken Perlin.  This is a randomly
 		131,13,201,95,96,53,194,233,7,225,140,36,103,30,69,142,8,99,37,240,21,10,23,	// arranged array of all numbers from 0-255 inclusive.
@@ -116,4 +117,5 @@ public class PerlinNoise {
 	private static double lerp(double a, double b, double x) {
 		return a + x * (b - a);
 	}
+}
 }
