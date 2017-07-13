@@ -7,8 +7,6 @@ namespace ProMapGen{
 		public NoiseCreator[] noises;
 		public Area[] areas;
 
-		public Vector2 position;
-
 		[Range(0,1)]
 		float waterLevel = 0.1f;
 
@@ -79,20 +77,17 @@ namespace ProMapGen{
 
 		void createNoiseCreators(){
 			foreach (NoiseCreator noise in noises) {
-				noise.create (terrainData.heightmapResolution);
 				if (GetComponent<Controller> ().debugResetRandom) {
 					Random.state = GetComponent<Controller> ().randomStartState;
 				}
+				noise.create (terrainData.heightmapResolution);
+				noise.createField ();
 			}
 		}
 		
 		public void getTileName(int x, int y){
 			Tile posTile = tileMap [x, y];
 			Debug.Log (posTile.areaName + " and " + posTile.subAreaName + " at " + x + " " + y);
-		}
-		
-		public void getTileName(){
-			getTileName ((int)position.x, (int)position.y);
 		}
 
 		//Shit

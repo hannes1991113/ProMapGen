@@ -24,6 +24,7 @@ namespace ProMapGen{
 		public float exponent = 1;
 
 		public bool normalize = false;
+		public bool equalize = false;
 
 		public Texture2D texture;
 
@@ -36,6 +37,11 @@ namespace ProMapGen{
 		private int[] histogram;
 
 		private float[,] field;
+
+		public float[,] getField(){
+			return field;
+		}
+
 		private int size;
 
 		public void create(int size){
@@ -57,7 +63,9 @@ namespace ProMapGen{
 			if (normalize) {
 				normalizeField ();
 			}
-			createHistogram ();
+			if (equalize) {
+				equalizeField ();
+			}
 			createHistogramCurve ();
 			createTexture ();
 			return field;
@@ -112,7 +120,13 @@ namespace ProMapGen{
 
 
 
-
+		void createHistogramCurve(){
+			createHistogram ();
+			curve = new AnimationCurve ();
+			for (int i = 0; i < accuracy; i++) {
+				curve.AddKey (((float)i) / accuracy, histogram [i]);
+			}
+		}
 
 		void createHistogram(){
 			minValue = 2;
@@ -123,35 +137,15 @@ namespace ProMapGen{
 				for(int x = 0; x < size; x++) {
 					float height = field [x, y];
 					count++;
-					checkMaxMin(height);
-					addToCurve (height);
+					if (height > maxValue)
+						maxValue = height;
+					if (height < minValue)
+						minValue = height;
+					int i = Mathf.Clamp ((int)(height * accuracy), 0, accuracy - 1);
+					histogram [i]++;
 				}
 			}
 		}
-
-		void checkMaxMin(float height){
-			if (height > maxValue)
-				maxValue = height;
-			if (height < minValue)
-				minValue = height;
-		}
-
-		void addToCurve(float height){
-			for (int i = 1; i <= accuracy; i++) {
-				if (height < ((float)i) / accuracy) {
-					histogram [i - 1]++;
-					break;
-				}
-			}
-		}
-			
-		void createHistogramCurve(){
-			curve = new AnimationCurve ();
-			for (int i = 0; i < accuracy; i++) {
-				curve.AddKey (((float)i) / accuracy, histogram [i]);
-			}
-		}
-
 
 
 		void normalizeField(){
@@ -165,42 +159,27 @@ namespace ProMapGen{
 			}
 		}
 
-
-
-
-
-
-
-
-
-
-
-
-
-		// To get a single octave out of the Noisemap
-		// octaves starting with 0
-		// Not in use yet, but maybe later
-		// DEPRECATED
-		public double getSingleOctave(double x, double y, double z, int octave){
-			double frequency = scale;
-			for(int i=0;i < octave; i++) {
-				frequency *= lacunarity;
+		void equalizeField(){
+			createHistogram ();
+			int[] kumHistogram = new int[accuracy];
+			int add = 0;
+			for (int i = 0; i < accuracy; i++) {
+				add += histogram [i];
+				kumHistogram [i] = add;
 			}
-			double value;
-			switch (noiseType) {
-			case NoiseType.PerlinUnity:
-				float x1 = (float)(x * frequency);
-				float y1 = (float)(y * frequency);
-				value = Mathf.PerlinNoise (x1, y1);
-				break;
-			case NoiseType.Perlin:
-			default:
-				double x2 = x * frequency;
-				double y2 = y * frequency;
-				value = PerlinNoise.perlin (x2, y2, z * frequency);
-				break;
+			float[] normKumHist = new float[accuracy];
+			for (int i = 0; i < accuracy; i++) {
+				normKumHist [i] = kumHistogram [i] / (float)kumHistogram [accuracy - 1];
 			}
-			return value;
+			for(int y = 0; y < size; y++) {
+				for(int x = 0; x < size; x++) {
+					float height = field [x, y];
+					int i = Mathf.Clamp ((int)(height * accuracy), 0, accuracy - 1);
+					field [x, y] = normKumHist [i];
+				}
+			}
 		}
+
+
 	}
 }

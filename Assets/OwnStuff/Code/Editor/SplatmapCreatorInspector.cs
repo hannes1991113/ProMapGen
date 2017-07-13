@@ -14,10 +14,6 @@ public class SplatmapCreatorInspector : Editor {
 			targetScript.CreateSplatmap ();
 		}
 
-		if (GUILayout.Button ("Show position Area")) {
-			targetScript.getTileName();
-		}
-
 //		if (GUILayout.Button ("Set Waterlevel")) {
 //			targetScript.setWaterLevel ();
 //		}
