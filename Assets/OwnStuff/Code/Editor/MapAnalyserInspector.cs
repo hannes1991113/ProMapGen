@@ -11,7 +11,7 @@ public class MapAnalyserInspector : Editor {
 
 		MapAnalyser targetScript = (MapAnalyser)target;
 		if (GUILayout.Button ("Analyse")) {
-			targetScript.analyseMap ();
+			targetScript.createHistogram ();
 		}
 	}
 

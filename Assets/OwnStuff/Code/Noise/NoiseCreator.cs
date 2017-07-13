@@ -23,9 +23,53 @@ namespace ProMapGen{
 		[Range(0,10)]
 		public float exponent = 1;
 
+		public bool equalization = false;
+
 		public Texture2D texture;
 
+		public AnimationCurve curve;
+
+		private int accuracy = 128;
+		private float minValue;
+		private float maxValue;
+		private int count;
+		private int[] histogram;
+
+		private float[,] field;
 		private int size;
+
+		public void create(int size){
+			this.size = size;
+			if (random) {
+				xOffset = Random.Range (0.0f, 1000.0f);
+				yOffset = Random.Range (0.0f, 1000.0f);
+			}
+		}
+
+		public float[,] createField(){
+			field = new float[size,size];
+			for(int y = 0; y < size; y++) {
+				for(int x = 0; x < size; x++) {
+					float sample = OctaveNoise(x,y, 0);
+					field [x, y] = sample;
+				}
+			}
+			createHistogram ();
+			createHistogramCurve ();
+			createTexture ();
+			return field;
+		}
+
+		void createTexture(){
+			texture = new Texture2D (size, size, TextureFormat.RGB24, false);
+			for(int y = 0; y < size; y++) {
+				for(int x = 0; x < size; x++) {
+					float sample = field [x, y];
+					texture.SetPixel(y, x, Color.white * (1 - sample));
+				}
+			}
+			texture.Apply ();
+		}
 
 		public float OctaveNoise(int x, int y, int z) {
 			float thisX = (x + xOffset) / size;
@@ -62,35 +106,61 @@ namespace ProMapGen{
 			return Mathf.Pow (returnValue, exponent);
 		}
 
-		public void createTexture(){
-			texture = new Texture2D (size, size, TextureFormat.RGB24, false);
-			for(int y = 0; y < size; y++) {
-				for(int x = 0; x < size; x++) {
-					float sample = OctaveNoise(x, y, 0);
-					texture.SetPixel(y, x, Color.white * (1 - sample));
+
+
+
+
+
+		void createHistogram(){
+			minValue = 2;
+			maxValue = -1;
+			count = 0;
+			histogram = new int[accuracy];
+			for(int y = 0; y < field.GetLength(1); y++) {
+				for(int x = 0; x < field.GetLength(0); x++) {
+					float height = field [x, y];
+					count++;
+					checkMaxMin(height);
+					addToCurve (height);
 				}
 			}
-			texture.Apply ();
 		}
 
-		public float[,] createField(){
-			float[,] field = new float[size,size];
-			for(int y = 0; y < size; y++) {
-				for(int x = 0; x < size; x++) {
-					float sample = OctaveNoise(x,y, 0);
-					field [x, y] = sample;
+		void checkMaxMin(float height){
+			if (height > maxValue)
+				maxValue = height;
+			if (height < minValue)
+				minValue = height;
+		}
+
+		void addToCurve(float height){
+			for (int i = 1; i <= accuracy; i++) {
+				if (height < ((float)i) / accuracy) {
+					histogram [i - 1]++;
+					break;
 				}
 			}
-			return field;
 		}
 
-		public void create(int size){
-			this.size = size;
-			if (random) {
-				xOffset = Random.Range (0.0f, 1000.0f);
-				yOffset = Random.Range (0.0f, 1000.0f);
+
+		void createHistogramCurve(){
+			curve = new AnimationCurve ();
+			for (int i = 0; i < accuracy; i++) {
+				curve.AddKey (((float)i) / accuracy, histogram [i]);
 			}
 		}
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 

@@ -83,9 +83,6 @@ namespace ProMapGen{
 				if (GetComponent<Controller> ().debugResetRandom) {
 					Random.state = GetComponent<Controller> ().randomStartState;
 				}
-				if (GetComponent<Controller> ().debugCreateTextures) {
-					noise.createTexture ();
-				}
 			}
 		}
 		
