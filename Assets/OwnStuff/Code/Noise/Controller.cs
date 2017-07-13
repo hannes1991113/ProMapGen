@@ -30,7 +30,7 @@ namespace ProMapGen{
 
 		void initiate(){
 			terrainData = GetComponent<Terrain> ().terrainData;
-			heights = terrainData.GetHeights (0, 0, terrainData.heightmapWidth, terrainData.heightmapHeight);
+			heights = terrainData.GetHeights (0, 0, terrainData.heightmapResolution, terrainData.heightmapResolution);
 			splatmapCreator = GetComponent<SplatmapCreator> ();
 			islandCreator = GetComponent<IslandCreator> ();
 			if (randomSeed) {

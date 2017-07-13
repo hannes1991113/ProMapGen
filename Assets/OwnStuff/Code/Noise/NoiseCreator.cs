@@ -23,7 +23,7 @@ namespace ProMapGen{
 		[Range(0,10)]
 		public float exponent = 1;
 
-		public bool equalization = false;
+		public bool normalize = false;
 
 		public Texture2D texture;
 
@@ -53,6 +53,9 @@ namespace ProMapGen{
 					float sample = OctaveNoise(x,y, 0);
 					field [x, y] = sample;
 				}
+			}
+			if (normalize) {
+				normalizeField ();
 			}
 			createHistogram ();
 			createHistogramCurve ();
@@ -116,8 +119,8 @@ namespace ProMapGen{
 			maxValue = -1;
 			count = 0;
 			histogram = new int[accuracy];
-			for(int y = 0; y < field.GetLength(1); y++) {
-				for(int x = 0; x < field.GetLength(0); x++) {
+			for(int y = 0; y < size; y++) {
+				for(int x = 0; x < size; x++) {
 					float height = field [x, y];
 					count++;
 					checkMaxMin(height);
@@ -141,8 +144,7 @@ namespace ProMapGen{
 				}
 			}
 		}
-
-
+			
 		void createHistogramCurve(){
 			curve = new AnimationCurve ();
 			for (int i = 0; i < accuracy; i++) {
@@ -151,6 +153,17 @@ namespace ProMapGen{
 		}
 
 
+
+		void normalizeField(){
+			createHistogram ();
+			for(int y = 0; y < size; y++) {
+				for(int x = 0; x < size; x++) {
+					float height = field [x, y];
+					height = (height - minValue) * (1 / (maxValue - minValue));
+					field [x, y] = height;
+				}
+			}
+		}
 
 
 
