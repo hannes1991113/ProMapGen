@@ -4,12 +4,27 @@ using UnityEngine;
 
 namespace ProMapGen{
 	public class IslandCreator : MonoBehaviour {
+		public enum CombinationType {
+			Add,
+			ExponentDeprecated,
+		}
 
+		public enum PreprocessType {
+			Curve,
+			ExponentBase,
+		}
+
+		[Header("Preprocess Distance")]
+		public PreprocessType preprocessType = PreprocessType.ExponentBase;
+		public AnimationCurve curve = new AnimationCurve();
+		public float exponentBase = 4;
+		[Header("Combination")]
+		public CombinationType combinationType = CombinationType.Add;
+		public AnimationCurve weightCurve = new AnimationCurve();
+
+		[Header("Size")]
 		public float maxSize = 10;
-
 		public float minSize = 5;
-
-		public Combination combiner = new Combination();
 
 		private TerrainData terrainData;
 		private float[,] heightMap;
@@ -77,14 +92,6 @@ namespace ProMapGen{
 			}
 		}
 
-		float combineValues(float height, float distance){
-	//		for(int i = 0; i < combiner.Length; i++){
-	//			height = combiner [i].execute (height, distance);
-	//		}
-			height = combiner.execute(height,distance);
-			return height;
-		}
-
 		void fillDistanceMap(){
 			for (int x = 0; x < terrainData.heightmapWidth; x++) {
 				for (int y=0; y < terrainData.heightmapHeight; y++) {
@@ -98,5 +105,47 @@ namespace ProMapGen{
 			distance = distance / maxDistance;
 			return distance;
 		}
+
+
+
+
+
+		float combineValues(float height, float distance){
+			return combine(height, preprocess(distance), preprocessWeight(distance));
+		}
+
+		float preprocess(float distance)
+		{
+			switch (preprocessType){
+			case PreprocessType.Curve:
+			default:
+				distance = curve.Evaluate (distance);
+				break;
+			case PreprocessType.ExponentBase:
+				distance = Mathf.Pow (exponentBase, -distance);
+				break;
+			}
+			return Mathf.Clamp(distance, 0, 1);
+		}
+
+		float preprocessWeight(float distance){
+			distance = weightCurve.Evaluate(distance);
+			return Mathf.Clamp(distance, 0, 1);
+		}
+
+		float combine(float height, float distance, float weight){
+			switch (combinationType){
+			case CombinationType.Add:
+			default:
+				height = distance * weight + height * (1 - weight);
+				break;
+			case CombinationType.ExponentDeprecated:
+				height = Mathf.Pow (height, (1-distance));
+				break;
+			}
+			return height;
+		}
+
+
 	}
 }
