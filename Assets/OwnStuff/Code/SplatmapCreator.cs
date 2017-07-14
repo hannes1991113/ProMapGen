@@ -8,7 +8,7 @@ namespace ProMapGen{
 		public Area[] areas;
 
 		[Range(0,1)]
-		float waterLevel = 0.1f;
+		public float waterLevel = 0.1f;
 
 		private TerrainData terrainData;
 		private float[,] heights;
@@ -31,6 +31,7 @@ namespace ProMapGen{
 			processAndCountTextures ();
 			splatmap = new float[terrainData.alphamapHeight, terrainData.alphamapWidth, numOfTextures];
 			createNoiseCreators ();
+			setWaterLevel ();
 		}
 
 		public void CreateSplatmap()
@@ -87,17 +88,21 @@ namespace ProMapGen{
 		
 		public void getTileName(int x, int y){
 			Tile posTile = tileMap [x, y];
-			Debug.Log (posTile.areaName + " and " + posTile.subAreaName + " at " + x + " " + y);
+			Debug.Log (posTile.areaName + " " + posTile.subAreaName + " at " + x + " " + y);
 		}
 
-		//Shit
 		public void setWaterLevel(){
 			water = transform.GetChild (0);
-			float scaleX = terrainData.heightmapScale.x;
+			if (water == null) {
+				Debug.Log ("Need Water");
+				return;
+			}
+			float scaleX = terrainData.size.x;
 			float scaleY = terrainData.heightmapScale.y;
-			float scaleZ = terrainData.heightmapScale.z;
-			Debug.Log("ScaleX = " + scaleX + " ScaleY = " + scaleY + " ScaleZ = " + scaleZ);
-			water.localPosition = new Vector3 (water.localPosition.x , waterLevel * scaleY, water.localPosition.z);
+			float scaleZ = terrainData.size.z;
+
+			water.localPosition = new Vector3 (scaleX * 0.5f, waterLevel * scaleY, scaleZ * 0.5f);
+			water.localScale = new Vector3 (scaleX / 100.0f, 1, scaleZ / 100.0f);
 		}
 		
 	}
