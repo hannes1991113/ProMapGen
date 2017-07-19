@@ -17,6 +17,7 @@ namespace ProMapGen{
 		[Header("Preprocess Distance")]
 		public PreprocessType preprocessType = PreprocessType.ExponentBase;
 		public AnimationCurve curve = new AnimationCurve();
+		[Range(1, 20)]
 		public float exponentBase = 4;
 		[Header("Combination")]
 		public CombinationType combinationType = CombinationType.Add;
