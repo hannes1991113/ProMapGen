@@ -6,7 +6,7 @@ namespace ProMapGen{
 	public class IslandCreator : MonoBehaviour {
 		public enum CombinationType {
 			Add,
-			ExponentDeprecated,
+			Exponent,
 		}
 
 		public enum PreprocessType {
@@ -21,6 +21,7 @@ namespace ProMapGen{
 		[Header("Combination")]
 		public CombinationType combinationType = CombinationType.Add;
 		public AnimationCurve weightCurve = new AnimationCurve();
+		public AnimationCurve exponentCurve = new AnimationCurve ();
 
 		[Header("Size")]
 		public float maxSize = 10;
@@ -108,10 +109,20 @@ namespace ProMapGen{
 
 
 
-
-
 		float combineValues(float height, float distance){
-			return combine(height, preprocess(distance), preprocessWeight(distance));
+			switch (combinationType){
+			case CombinationType.Add:
+			default:
+				float weight = preprocessWeight (distance);
+				distance = preprocess (distance);
+				height = distance * weight + height * (1 - weight);
+				break;
+			case CombinationType.Exponent:
+				distance = exponentCurve.Evaluate (distance);
+				height = Mathf.Pow (height, distance);
+				break;
+			}
+			return height;
 		}
 
 		float preprocess(float distance)
@@ -131,19 +142,6 @@ namespace ProMapGen{
 		float preprocessWeight(float distance){
 			distance = weightCurve.Evaluate(distance);
 			return Mathf.Clamp(distance, 0, 1);
-		}
-
-		float combine(float height, float distance, float weight){
-			switch (combinationType){
-			case CombinationType.Add:
-			default:
-				height = distance * weight + height * (1 - weight);
-				break;
-			case CombinationType.ExponentDeprecated:
-				height = Mathf.Pow (height, (1-distance));
-				break;
-			}
-			return height;
 		}
 
 
