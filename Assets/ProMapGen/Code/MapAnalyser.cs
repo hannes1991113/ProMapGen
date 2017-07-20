@@ -54,12 +54,8 @@ namespace ProMapGen{
 		}
 
 		private void addToCurve(float height){
-			for (int i = 1; i <= accuracy; i++) {
-				if (height < ((float)i) / accuracy) {
-					histogram [i - 1]++;
-					break;
-				}
-			}
+			int i = Mathf.Clamp ((int)(height * accuracy), 0, accuracy - 1);
+			histogram [i]++;
 		}
 	}
 }
